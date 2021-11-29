@@ -1,15 +1,17 @@
+import constants
+
 class image:
 
     def __init__(self, name, test=False):
 
-        URLTest = "../DataBase/test/original/"
-        URLTraining = "../DataBase/training/original/"
+        URLTest = constants.ORIGINAL_TEST_PATH
+        URLTraining = constants.ORIGINAL_TRAINING_PATH
 
         self.name = name
         if(test):
-            self.url = URLTest + name + ".jpg"
+            self.url = URLTest + name + constants.FORMAT
         else:
-            self.url = URLTraining + name + ".jpg"
+            self.url = URLTraining + name + constants.FORMAT
 
 
     def getUrl(self):

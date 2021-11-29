@@ -1,7 +1,7 @@
 from skimage import feature
 import cv2
 import matplotlib.pyplot as plt
-import os
+import constants
 
 
 class hog:
@@ -9,14 +9,14 @@ class hog:
     def __init__(self, image, test=False):
 
         if test:
-            HogUrl = "../DataBase/test/HOG/"
+            HogUrl = constants.HOG_TEST_PATH
         else:
-            HogUrl = "../DataBase/training/HOG/"
+            HogUrl = constants.HOG_TRAINING_PATH
 
         self.original = image
         self.originalUrl = self.original.getUrl()
         self.nameImage = self.original.getName()
-        self.finalUrl = HogUrl + self.nameImage + ".jpg"
+        self.finalUrl = HogUrl + self.nameImage + constants.FORMAT
 
     def generate(self):
         image = cv2.imread(self.originalUrl)
