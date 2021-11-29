@@ -15,3 +15,9 @@ TRAINING_PATH = DATABASE_PATH + "/training"
 ORIGINAL_TRAINING_PATH = TRAINING_PATH + "/original/"
 HOG_TRAINING_PATH = TRAINING_PATH + "/HOG/"
 
+# pair relation
+
+file_path = [TRAINING_PATH + "/pairsDevTrain" + ".txt",
+             TRAINING_PATH + "/notPairsDevTrain" + ".txt",
+             TEST_PATH + "/pairsDevTest" + ".txt",
+             TEST_PATH + "/notPairsDevTest" + ".txt"]
