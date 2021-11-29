@@ -1,3 +1,4 @@
+
 # Extensão de arquivo
 FORMAT = ".jpg"
 

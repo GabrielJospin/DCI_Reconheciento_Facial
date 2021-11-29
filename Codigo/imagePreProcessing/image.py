@@ -1,18 +1,17 @@
-import constants
+from .constants import *
 
-class image:
+class image():
 
     def __init__(self, name, test=False):
 
-        URLTest = constants.ORIGINAL_TEST_PATH
-        URLTraining = constants.ORIGINAL_TRAINING_PATH
+        URLTest = ORIGINAL_TEST_PATH
+        URLTraining = ORIGINAL_TRAINING_PATH
 
         self.name = name
-        if(test):
-            self.url = URLTest + name + constants.FORMAT
+        if test:
+            self.url = URLTest + name + FORMAT
         else:
-            self.url = URLTraining + name + constants.FORMAT
-
+            self.url = URLTraining + name + FORMAT
 
     def getUrl(self):
         return self.url

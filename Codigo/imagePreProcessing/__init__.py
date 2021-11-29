@@ -2,3 +2,4 @@
 
 from .image import image
 from .hog import hog
+from .constants import *
