@@ -1,7 +1,6 @@
 from skimage import feature
 import cv2
-import matplotlib.pyplot as plt
-from .constants import *
+from Codigo.constants import *
 
 
 class hog:

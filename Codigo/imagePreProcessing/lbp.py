@@ -1,6 +1,5 @@
-from .constants import *
+from Codigo.constants import *
 from skimage import feature
-import numpy as np
 import cv2
 
 
