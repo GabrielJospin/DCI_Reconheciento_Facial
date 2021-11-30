@@ -8,7 +8,7 @@ def print_hi(name):
     print(f'Hello there \nGeneral {name}!!')
 
 
-def preProcessHog():
+def imageArray():
     image = []
     i = 0
     for file_path in ipp.constants.file_path:
@@ -21,7 +21,11 @@ def preProcessHog():
 
         i += 1
 
-    # print(image)
+    return image
+
+
+def preProcessHog():
+    image = imageArray()
 
     for img in image:
         imageF = ipp.image(img[0], test=(img[1] > 1))
@@ -29,12 +33,17 @@ def preProcessHog():
         hog.generate()
 
 
+def preProcessLbp():
+    image = imageArray()
+
+    for img in image:
+        imageF = ipp.image(img[0], test=(img[1] > 1))
+        hog = ipp.lbp(imageF, test=(img[1] > 1))
+        hog.generate()
+
+
 if __name__ == '__main__':
     print_hi('Kenobi')
 
 # preProcessHog()
-
-image = ipp.image("Bill_Gates_0001")
-lbp = ipp.lbp(image)
-lbp.gerate()
-
+preProcessLbp()
