@@ -7,6 +7,7 @@ from Codigo.readFile import readFile
 def print_hi(name):
     print(f'Hello there \nGeneral {name}!!')
 
+
 def preProcessHog():
     image = []
     i = 0
@@ -32,3 +33,8 @@ if __name__ == '__main__':
     print_hi('Kenobi')
 
 # preProcessHog()
+
+image = ipp.image("Bill_Gates_0001")
+lbp = ipp.lbp(image)
+lbp.gerate()
+
