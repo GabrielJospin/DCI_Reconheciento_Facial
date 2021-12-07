@@ -50,6 +50,22 @@ def gerateDF(data):
     data.generateFiles()
     data.generateDB()
 
+
+def mlp(ValuesIn, ValuesOut, test):
+    mlp = clf.mlp(ValuesIn, ValuesOut)
+    mlp.train()
+    print(test)
+    outY = pd.DataFrame(mlp.calc_saida(test))
+    return outY
+
+
+def svm(ValuesIn, ValuesOut, test):
+    svm = clf.svm(ValuesIn, ValuesOut)
+    svm.train()
+    outY = pd.DataFrame(svm.calc_saida(test))
+    return outY
+
+
 if __name__ == '__main__':
     print_hi('Kenobi')
 
@@ -83,29 +99,19 @@ print(X)
 print(Y)
 print(Xt)
 print(Yt)
-# newX = [[0, 0],
-#         [0, 1],
-#         [1, 0],
-#         [1, 1]]
-# newY = [0, 1, 1, 0]
-# newXt = [[0, 0], [1, 0], [1, 0], [1, 1], [0, 0], [1, 0]]
-# newYt = [0, 1, 1, 0, 0, 1]
 
 newX = pd.DataFrame(X)
 newXt = pd.DataFrame(Xt)
 newY = pd.DataFrame(Y)
 newYt = np.asarray(Yt)
 
-
-mlp = clf.mlp(newX, newY)
-mlp.train()
 erro = 0
 outs = []
-print(newXt)
-outY = pd.DataFrame(mlp.calc_saida(newXt))
+Ymlp = mlp(newX, newY, newXt)
+Ysvm = mlp(newX, newY, newXt)
 
 
-for index, x in outY.iterrows():
+for index, x in Ysvm.iterrows():
     if x[0] > 0.5:
         out = 1
     else:
@@ -117,6 +123,6 @@ for index, x in outY.iterrows():
 
 print(outs)
 print(newYt)
-print(outY.transpose())
+print(Ysvm.transpose())
 print(erro)
-print((1 - erro/len(newYt)) * 100)
+print((1 - erro / len(newYt)) * 100)
