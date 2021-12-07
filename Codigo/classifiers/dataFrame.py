@@ -1,5 +1,6 @@
+import numpy as np
 import pandas as pd
-from Codigo import constants
+from .constants import *
 import cv2
 
 
@@ -8,21 +9,27 @@ class dataFrame:
     def __init__(self, pathFile, pairs, model, test=False):
 
         if model == 'hog' and test:
-            self.pathDic = constants.HOG_TEST_PATH
+            self.pathDic = HOG_TEST_PATH
         elif model == 'hog' and not test:
-            self.pathDic = constants.HOG_TRAINING_PATH
-        elif model == 'lpb' and test:
-            self.pathDic = constants.LBP_TEST_PATH
-        elif model == 'lpb' and not test:
-            self.pathDic = constants.LBP_TRAINING_PATH
+            self.pathDic = HOG_TRAINING_PATH
+        elif model == 'lbp' and test:
+            self.pathDic = LBP_TEST_PATH
+        elif model == 'lbp' and not test:
+            self.pathDic = LBP_TRAINING_PATH
         else:
             raise ValueError("model is not acept")
-
+        self.model = model
+        if pairs:
+            self.type = 'pairs'
+        else:
+            self.type = 'notPairs'
         self.path = pathFile
         self.pairs = pairs
         self.files = pd.DataFrame(columns=['img1', 'img2', 'pair'])
-        self.X = pd.DataFrame(columns=['img1', 'img2'])
+        self.X = pd.DataFrame()
         self.Y = pd.DataFrame(columns=['pair'])
+        self.db = pd.DataFrame()
+
 
     def generateFiles(self):
         if self.pairs:
@@ -65,6 +72,26 @@ class dataFrame:
             img2 = row['img2']
             y = int(row['pair'])
             image1 = cv2.cvtColor(cv2.imread(img1), cv2.COLOR_BGR2GRAY)
+            (hist1, _) = np.histogram(image1.ravel())
+
             image2 = cv2.cvtColor(cv2.imread(img2), cv2.COLOR_BGR2GRAY)
-            self.X = self.X.append({'img1': image1, 'img2': image2}, ignore_index=True)
+            (hist2, _) = np.histogram(image2.ravel())
+
+            x = np.concatenate([hist1, hist2])
+            if len(self.X) == 0:
+                self.X = pd.DataFrame(x).transpose()
+            else:
+                zipx = zip(self.X.columns, x)
+                dic = dict(zipx)
+                self.X = self.X.append(dic, ignore_index=True)
             self.Y = self.Y.append({'pair': y}, ignore_index=True)
+
+        self.db = self.X
+        self.db['pair'] = self.Y['pair']
+        self.db.to_csv(f'{self.pathDic}{self.model}.{self.type}.csv')
+
+    def getDB(self):
+        df = pd.read_csv(f'{self.pathDic}{self.model}.{self.type}.csv', index_col=0)
+        X = df.iloc[:, 0:(len(df.columns) - 1)]
+        Y = df.iloc[:,(len(df.columns) - 1):(len(df.columns))]
+        return (X, Y)

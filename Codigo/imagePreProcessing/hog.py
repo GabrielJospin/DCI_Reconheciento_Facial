@@ -1,6 +1,6 @@
-from skimage import feature
 import cv2
-from Codigo.constants import *
+from .constants import *
+from skimage import feature
 
 
 class hog:
@@ -17,7 +17,7 @@ class hog:
         self.nameImage = self.original.getName()
         self.finalUrl = HogUrl + self.nameImage + FORMAT
 
-    def generate(self):
+    def generate(self, eps=1e-7):
         print(f"start to {self.original.getUrl()}")
         image = cv2.imread(self.originalUrl)
         (hogF, hog_image) = feature.hog(image, orientations=9, pixels_per_cell=(8, 8),

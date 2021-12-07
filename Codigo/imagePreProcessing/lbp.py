@@ -1,6 +1,6 @@
-from Codigo.constants import *
-from skimage import feature
 import cv2
+from .constants import *
+from skimage import feature
 
 
 class lbp:
@@ -19,7 +19,7 @@ class lbp:
         self.radius = radius
         self.numPoints = numPoints
 
-    def generate(self):
+    def generate(self, eps=1e-7):
         print(f"start to {self.original.getUrl()}")
         image = cv2.imread(self.originalUrl)
         imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

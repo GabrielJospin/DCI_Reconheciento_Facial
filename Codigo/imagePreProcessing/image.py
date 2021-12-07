@@ -1,4 +1,5 @@
-from Codigo.constants import *
+from .constants import *
+
 
 class image():
 
