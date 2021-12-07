@@ -93,7 +93,7 @@ newY = pd.DataFrame(Y)
 newYt = np.asarray(Yt)
 
 
-mlp = clf.rna(newX, newY)
+mlp = clf.mlp(newX, newY)
 mlp.train()
 erro = 0
 outs = []

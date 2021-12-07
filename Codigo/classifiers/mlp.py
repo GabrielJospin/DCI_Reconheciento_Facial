@@ -1,91 +1,97 @@
+
 import numpy as np
-import pandas as pd
 
 
-class mlp:
+class mlp():
 
-    def __init__(self, X, Y, h=1, itr=20, learn=0.1):
-        # Definido Entradas e saidas
-        self.X = pd.DataFrame(X)
-        self.Y = np.asarray(Y)
-        self.h = h
-        self.ne = len(self.X)
-        self.n = len(self.X.columns)
-        self.ns = len(self.Y)
-        print(f'mlp of a dataframe {self.ne}X{self.n} with {self.h}  neurons occult \nexit: {self.ns}')
-
-        # Gradientes
-        self.w0 = np.random.random((self.n, self.h))
-        self.w1 = np.random.random((self.h, self.n))
-        self.w2 = np.random.random((self.n, self.h))
-
-        # Outros
-        # self.sigmoide = np.vectorize(self.sigmoid(self.X))
-        self.itr = itr
-        self.learn = learn
-        ones = np.ones((4400, 1))
-        self.error = ones.__add__(self.Y * -1)
-
-    def train(self):
-        print(f'training')
-        nep = 0
-        E = np.matmul(self.error.transpose(), self.error)
-        print(E)
-        print(f'errooooo')
-        self.feed(self.X)
-        g = np.matmul(self.z0, np.matmul(self.z1, self.z2))
-        norm = np.linalg.norm(g)
-        print(f'pre while')
-        print(g)
-        print(norm)
-        print(nep)
-        print(E)
-        while norm > 1e-3 and nep < self.itr and E >1e-4:
-            print(f'iteration: {nep}')
-            nep += 1
-            self.w0 -= self.learn * np.matmul(np.matmul(self.z0, g).transpose(), self.z1)
-            self.w1 -= self.learn * np.matmul(self.z1.transpose(), g)
-            self.w2 -= self.learn * self.z2.transpose()
-            self.feed(self.X)
-            g = np.matmul(self.z0, np.matmul(self.z1, self.z2))
-            g = np.asarray(g)
-            norm = np.linalg.norm(g)
-            Yr = self.output2
-            self.erro = Yr - self.Y
-            E = np.matmul(self.error.transpose(), self.error)
-
-
-    def sigmoid(self, X):
-        X = X.astype(float)
-        return (1 + np.exp(-X)) ** (-1)
-
-    def answer(self, X):
-        print('calc answer')
-
-        Zin = np.matmul(X, self.w0)
-        Z = self.sigmoid(Zin)
-        Win = np.matmul(Z, self.w1)
-        W = self.sigmoid(Win)
-        Yin = np.matmul(W, self.w2)
-        Y = self.sigmoid(Yin)
+    @staticmethod
+    def normalize(X: np.array):
+        tam = len(X)
+        Y = (X - X.mean()) / X.std()
         return Y
 
-    def feed(self, X):
-        print('calc gradient')
-        Zin = np.matmul(X, self.w0)
-        Z = self.sigmoid(Zin)
-        Win = np.matmul(Z, self.w1)
-        W = self.sigmoid(Win)
-        Yin = np.matmul(W, self.w2)
-        Y = self.sigmoid(Yin)
-        self.output2 = Y
-        erro = self.output2 - self.Y
-        gl = np.matmul((- Y + 1).transpose(), self.Y)
-        # print(f'gl:')
-        # print(gl)
-        # todo: corrigir zz
-        Eg = np.matmul(erro, gl)
-        # print(Eg)
-        self.z0 = np.matmul(Z, np.asarray(Eg).transpose())
-        self.z1 = np.matmul(np.aszarray(self.z0), B)
-        self.z2 = np.matmul(np.asarray(self.z1).transpose(), X)
+    def __init__(self, X, Y, h=1):
+        super(mlp, self).__init__()
+        self.X = self.normalize(X)
+        self.Y = Y
+        self.h = h
+        N, ne = X.shape
+        ns = Y.shape[1]
+        self.A = np.ones((self.h, ne))
+        self.A = 2 * self.A - 1
+        self.B = np.ones((ns, self.h))
+        self.B = 2 * self.B - 1
+
+    def train(self):
+        h = self.h
+        X = self.X
+        Y = self.Y
+        N, ne = X.shape
+        ns = Y.shape[2 - 1]
+        # Inicializei a matriz de pesos
+        A = self.A
+        B = self.B
+        # Calcula do erro
+        Yr = self.calc_saida(X)
+        print(Y)
+        print(Yr)
+        erro = np.matrix(np.subtract(Y, Yr))
+        print(erro)
+        E = sum(sum(np.multiply(erro, erro)))
+        # Definir numero de epocas
+        nepmax = 200
+        nep = 0
+        alfa = 0.01
+        # Calculo do gradiente
+        self.calc_grad()
+        g = np.concatenate([self.dEdA.transpose(), self.dEdB])
+        print(np.linalg.norm(g))
+        print(E)
+        print('--------------------------------------------')
+        while np.linalg.norm(g) > 0.001 and (nep < nepmax and E > 0.0001):
+            print(f'iteration {nep}')
+            # Incrementar o numero de epocas
+            nep = nep + 1
+            # Atualiza os pesos
+            A = A - alfa * self.dEdA
+            B = B - alfa * self.dEdB
+            # Calculo o gradiente
+            self.calc_grad()
+            g = np.concatenate([self.dEdA.transpose(), self.dEdB])
+            # Calculo o erro
+            Yr = self.calc_saida(X)
+            erro = np.matrix(np.subtract(Y, Yr))
+            E = sum(sum(np.multiply(erro, erro)))
+            self.A = A
+            self.B = B
+            print(np.linalg.norm(g))
+            print(E)
+            print('--------------------------------------------')
+
+    def calc_saida(self, X):
+        X = self.normalize(X)
+        A = self.A
+        B = self.B
+        N, ne = X.shape
+        Zin = np.matmul(X, np.transpose(A))
+        Z = 1.0 / (1 + np.exp(Zin))
+        Yin = np.matmul(Z, np.transpose(B))
+        Yr = 1.0 / (1 + np.exp(Yin))
+        return Yr * 2
+
+    def calc_grad(self):
+        A = self.A
+        B = self.B
+        X = self.X
+        Y = self.Y
+
+        Zin = np.matmul(X, np.transpose(A))
+        Z = 1.0 / (1 + np.exp(Zin))
+        Yin = np.matmul(Z, np.transpose(B))
+        Yr = 1.0 / (1 + np.exp(Yin))
+        erro = np.subtract(Yr, Y)
+        gl = np.multiply((1 - Yr), Yr)
+        fl = np.multiply((1 - Z), Z)
+        self.dEdB = np.matmul(np.multiply(erro, gl).transpose(), Z)
+        self.dEdZ = np.matmul(np.multiply(erro, gl), B)
+        self.dEdA = np.matmul(np.transpose((np.multiply(self.dEdZ, fl))), X)
