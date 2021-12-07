@@ -56,11 +56,11 @@ if __name__ == '__main__':
 # preProcessHog()
 # preProcessLbp()
 
-df = clf.dataFrame(constants.file_path[0], True, 'hog')
-df2 = clf.dataFrame(constants.file_path[1], False, 'hog')
+df = clf.dataFrame(constants.file_path[0], True, 'lbp')
+df2 = clf.dataFrame(constants.file_path[1], False, 'lbp')
 
-dfTest = clf.dataFrame(constants.file_path[2], True, 'hog', test=True)
-df2Test = clf.dataFrame(constants.file_path[3], False, 'hog', test=True)
+dfTest = clf.dataFrame(constants.file_path[2], True, 'lbp', test=True)
+df2Test = clf.dataFrame(constants.file_path[3], False, 'lbp', test=True)
 
 # gerateDF(df)
 # gerateDF(df2)
@@ -79,6 +79,10 @@ Xt = Xt1.append(Xt2, ignore_index=True)
 Yt = Yt1.append(Yt2, ignore_index=True)
 Yt = np.asarray(Yt)
 
+print(X)
+print(Y)
+print(Xt)
+print(Yt)
 # newX = [[0, 0],
 #         [0, 1],
 #         [1, 0],

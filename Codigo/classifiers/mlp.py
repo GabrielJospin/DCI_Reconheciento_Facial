@@ -12,7 +12,9 @@ class mlp():
 
     def __init__(self, X, Y, h=1):
         super(mlp, self).__init__()
-        self.X = self.normalize(X)
+        self.X = self.normalize(X).replace(np.nan, 0)
+        print(f'after Normalize')
+        print(self.X)
         self.Y = Y
         self.h = h
         N, ne = X.shape
@@ -69,7 +71,7 @@ class mlp():
             print('--------------------------------------------')
 
     def calc_saida(self, X):
-        X = self.normalize(X)
+        X = self.normalize(X).replace(np.nan, 0)
         A = self.A
         B = self.B
         N, ne = X.shape
