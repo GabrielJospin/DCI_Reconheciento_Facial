@@ -13,8 +13,8 @@ class mlp():
     def __init__(self, X, Y, h=1):
         super(mlp, self).__init__()
         self.X = self.normalize(X).replace(np.nan, 0)
-        print(f'after Normalize')
-        print(self.X)
+        # print(f'after Normalize')
+        # print(self.X)
         self.Y = Y
         self.h = h
         N, ne = X.shape
@@ -35,10 +35,10 @@ class mlp():
         B = self.B
         # Calcula do erro
         Yr = self.calc_saida(X)
-        print(Y)
-        print(Yr)
+        # print(Y)
+        # print(Yr)
         erro = np.matrix(np.subtract(Y, Yr))
-        print(erro)
+        # print(erro)
         E = sum(sum(np.multiply(erro, erro)))
         # Definir numero de epocas
         nepmax = 200
@@ -47,11 +47,11 @@ class mlp():
         # Calculo do gradiente
         self.calc_grad()
         g = np.concatenate([self.dEdA.transpose(), self.dEdB])
-        print(np.linalg.norm(g))
-        print(E)
-        print('--------------------------------------------')
+        # print(np.linalg.norm(g))
+        # print(E)
+        # print('--------------------------------------------')
         while np.linalg.norm(g) > 0.001 and (nep < nepmax and E > 0.0001):
-            print(f'iteration {nep}')
+            # print(f'iteration {nep}')
             # Incrementar o numero de epocas
             nep = nep + 1
             # Atualiza os pesos
@@ -66,9 +66,9 @@ class mlp():
             E = sum(sum(np.multiply(erro, erro)))
             self.A = A
             self.B = B
-            print(np.linalg.norm(g))
-            print(E)
-            print('--------------------------------------------')
+            # print(np.linalg.norm(g))
+            # print(E)
+            # print('--------------------------------------------')
 
     def calc_saida(self, X):
         X = self.normalize(X).replace(np.nan, 0)
