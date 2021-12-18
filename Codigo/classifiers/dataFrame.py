@@ -72,10 +72,11 @@ class dataFrame:
             img2 = row['img2']
             y = int(row['pair'])
             image1 = cv2.cvtColor(cv2.imread(img1), cv2.COLOR_BGR2GRAY)
-            (hist1, _) = np.histogram(image1.ravel())
+            max_bins = int(image1.max() + 1)
+            (hist1, _) = np.histogram(image1.ravel(), normed=True, bins=max_bins, range=(0, max_bins))
 
             image2 = cv2.cvtColor(cv2.imread(img2), cv2.COLOR_BGR2GRAY)
-            (hist2, _) = np.histogram(image2.ravel())
+            (hist2, _) = np.histogram(image2.ravel(), normed=True, bins=max_bins, range=(0, max_bins))
 
             x = np.concatenate([hist1, hist2])
             if len(self.X) == 0:

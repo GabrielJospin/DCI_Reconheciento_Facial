@@ -3,20 +3,20 @@ from random import randrange
 import numpy as np
 
 
+def linear_kernel(x1, x2):
+    return np.dot(x1, x2)
+
+
+def compute_w(multipliers, X, y):
+    return np.sum(multipliers[i] * y[i] * X[i] for i in range(len(y)))
+
+
 class svm:
-
-    @staticmethod
-    def linear_kernel(x1, x2):
-        return np.dot(x1, x2)
-
-    @staticmethod
-    def compute_w(multipliers, X, y):
-        return np.sum(multipliers[i] * y[i] * X[i] for i in range(len(y)))
 
     def __init__(self, X, Y, C=10, tol=0.001, kernel=linear_kernel, use_linear_optim=True) -> None:
         super().__init__()
-        self.X = X
-        self.y = Y
+        self.X = np.matrix(X)
+        self.y = np.matrix(Y)
         self.m, self.n = np.shape(self.X)
         self.alphas = np.zeros(self.m)
 
@@ -35,15 +35,19 @@ class svm:
         # Compute the SVM output for example i
         # Note that Platt uses the convention w.x-b=0
         # while we have been using w.x+b in the book.
+
     def calc_saida(self, Xt):
         out = []
-        for index, x in Xt.interrrows():
-            out[index] = self.output(x)
+        for index, x in Xt.iterrows():
+            print(x)
+            result = self.output(x)
+            print(result)
+            out.append(result)
 
     def output(self, x):
         if self.use_linear_optim:
             # Equation 1
-            return float(np.dot(self.w.T, x)) - self.b
+            return float(np.matmul(np.matrix(self.w), x.T)) - self.b
         else:
             # Equation 10
             return np.sum([self.alphas[j] * self.y[j]
@@ -77,9 +81,9 @@ class svm:
         if L == H:
             return False
 
-        k11 = self.kernel(X1, X1)
-        k12 = self.kernel(X1, self.X[i2])
-        k22 = self.kernel(self.X[i2], self.X[i2])
+        k11 = self.kernel(X1, X1.T)
+        k12 = self.kernel(X1, self.X[i2].T)
+        k22 = self.kernel(self.X[i2], self.X[i2].T)
 
         # Compute the second derivative of the
         # objective function along the diagonal.
@@ -102,7 +106,7 @@ class svm:
             f1 = y1 * (E1 + self.b) - a1 * k11 - s * self.a2 * k12
             f2 = self.y2 * (self.E2 + self.b) - s * a1 * k12 \
                  - self.a2 * k22
-            L1 = a1 + s(self.a2 - L)
+            L1 = a1 + s * (self.a2 - L)
             H1 = a1 + s * (self.a2 - H)
             Lobj = L1 * f1 + L * f2 + 0.5 * (L1 ** 2) * k11 \
                    + 0.5 * (L ** 2) * k22 + s * L * L1 * k12
@@ -142,8 +146,8 @@ class svm:
         # Update the error cache.
         for i in range(self.m):
             if 0 < self.alphas[i] < self.C:
-                self.errors[i] += delta1 * self.kernel(X1, self.X[i]) + \
-                                  delta2 * self.kernel(self.X2, self.X[i]) \
+                self.errors[i] += delta1 * self.kernel(X1, self.X[i].T) + \
+                                  delta2 * self.kernel(self.X2, self.X[i].T) \
                                   - delta_b
 
         self.errors[i1] = 0
@@ -175,7 +179,7 @@ class svm:
         if 0 < self.alphas[i1] < self.C:
             return self.errors[i1]
         else:
-            return self.output(i1) - self.y[i1]
+            return self.output(self.X[i1]) - self.y[i1]
 
     def second_heuristic(self, non_bound_indices):
         i1 = -1

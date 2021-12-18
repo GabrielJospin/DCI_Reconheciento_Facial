@@ -15,6 +15,7 @@ class RegLog:
         return (self.X - self.X.mean()) / self.X.std()
 
     def predict(self, X):
+        X = np.matrix(X)
         X = self.normalize(X)
         result = []
         for (i, j), x in np.ndenumerate(X):
@@ -25,7 +26,7 @@ class RegLog:
                 result.append(factor)
         return result
 
-    def result(self, matrizDados):
+    def calc_saida(self, matrizDados):
         brutal = self.predict(matrizDados)
         for index, ele in np.ndenumerate(np.array(brutal)):
             if ele >= 0.5:
@@ -41,11 +42,12 @@ class RegLog:
         self.Y = Y
         self.b0 = 1
         self.b1 = np.ones((1, 20)).transpose()
+
+    def train(self):
         L = 0.001
-        epochs = int(len(self.X)/20)
         D_b0 = 0
         D_b1 = 0
-
+        epochs = int(len(self.X) / 20)
         for epoch in range(epochs):
             print(f'iteration{epoch} of {epochs}')
             y_pred = np.matrix(self.predict(self.X)).transpose()

@@ -23,5 +23,8 @@ class hog:
         (hogF, hog_image) = feature.hog(image, orientations=9, pixels_per_cell=(8, 8),
                                         cells_per_block=(1, 1), block_norm='L2-Hys', visualize=True,
                                         transform_sqrt=True)
+        # print(hogF)
+        # print(hog_image)
+
         cv2.imwrite(self.finalUrl, hog_image*255.)
         print(f"finish to {self.finalUrl}")

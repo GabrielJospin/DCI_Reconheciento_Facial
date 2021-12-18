@@ -51,18 +51,11 @@ def gerateDF(data):
     data.generateDB()
 
 
-def mlp(ValuesIn, ValuesOut, test):
-    mlp = clf.mlp(ValuesIn, ValuesOut)
-    mlp.train()
+def oper(ValuesIn, ValuesOut, test, ope):
+    classif = ope(ValuesIn, ValuesOut)
+    classif.train()
     print(test)
-    outY = pd.DataFrame(mlp.calc_saida(test))
-    return outY
-
-
-def svm(ValuesIn, ValuesOut, test):
-    svm = clf.svm(ValuesIn, ValuesOut)
-    svm.train()
-    outY = pd.DataFrame(svm.calc_saida(test))
+    outY = pd.DataFrame(classif.calc_saida(test))
     return outY
 
 
@@ -105,24 +98,26 @@ newXt = pd.DataFrame(Xt)
 newY = pd.DataFrame(Y)
 newYt = np.asarray(Yt)
 
-erro = 0
-outs = []
-Ymlp = mlp(newX, newY, newXt)
-Ysvm = mlp(newX, newY, newXt)
+classificadores = [clf.mlp, clf.svm, clf.RegLog]
 
+for ope in classificadores:
 
-for index, x in Ysvm.iterrows():
-    if x[0] > 0.5:
-        out = 1
-    else:
-        out = 0
+    erro = 0
+    outs = []
+    Y = pd.DataFrame(oper(newX, newY, newXt, ope))
 
-    outs.append(out)
-    if newYt[index] != out:
-        erro += 1
+    for index, x in Y.iterrows():
+        if x[0] > 0.5:
+            out = 1
+        else:
+            out = 0
 
-print(outs)
-print(newYt)
-print(Ysvm.transpose())
-print(erro)
-print((1 - erro / len(newYt)) * 100)
+        outs.append(out)
+        if newYt[index] != out:
+            erro += 1
+
+    print(outs)
+    print(newYt)
+    print(Y.transpose())
+    print(erro)
+    print((1 - erro / len(newYt)) * 100)
