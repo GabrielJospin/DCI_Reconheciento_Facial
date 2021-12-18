@@ -1,6 +1,13 @@
 from random import randrange
 
 import numpy as np
+import pandas as pd
+
+
+def normalize(X: np.array):
+    tam = len(X)
+    Y = (X - X.mean()) / X.std()
+    return 1/(1+np.exp(- Y))
 
 
 def linear_kernel(x1, x2):
@@ -15,7 +22,7 @@ class svm:
 
     def __init__(self, X, Y, C=10, tol=0.001, kernel=linear_kernel, use_linear_optim=True) -> None:
         super().__init__()
-        self.X = np.matrix(X)
+        self.X = np.matrix(normalize(X))
         self.y = np.matrix(Y)
         self.m, self.n = np.shape(self.X)
         self.alphas = np.zeros(self.m)
@@ -39,10 +46,12 @@ class svm:
     def calc_saida(self, Xt):
         out = []
         for index, x in Xt.iterrows():
-            print(x)
+            # print(x)
             result = self.output(x)
-            print(result)
-            out.append(result)
+            # print(result)
+            out.append(int(result))
+        # return out
+        return normalize(np.asarray(out))
 
     def output(self, x):
         if self.use_linear_optim:
@@ -270,5 +279,5 @@ class svm:
 
             if examine_all:
                 examine_all = False
-            elif num_changed == 0:
-                examine_all = True
+            #elif num_changed == 0:
+            #    examine_all = True

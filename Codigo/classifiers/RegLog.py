@@ -22,7 +22,7 @@ class RegLog:
             if j == 0:
                 poli = self.b1.__matmul__(np.matrix(X[i]))
                 w = -self.b0 - np.sum(poli)
-                factor = 1 / (1 + np.exp(w))
+                factor = 1 / (1 + np.exp(-w))
                 result.append(factor)
         return result
 
