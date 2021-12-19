@@ -20,7 +20,7 @@ def compute_w(multipliers, X, y):
 
 class svm:
 
-    def __init__(self, X, Y, C=10, tol=0.001, kernel=linear_kernel, use_linear_optim=True) -> None:
+    def __init__(self, X, Y, C=5, tol=0.001, kernel=linear_kernel, use_linear_optim=True) -> None:
         super().__init__()
         self.X = np.matrix(normalize(X))
         self.X[np.isnan(self.X)] = 0
@@ -52,7 +52,7 @@ class svm:
             # print(result)
             out.append(int(result))
         # return out
-        return normalize(np.asarray(out))
+        return normalize(np.asarray(out)).transpose()
 
     def output(self, x):
         if self.use_linear_optim:

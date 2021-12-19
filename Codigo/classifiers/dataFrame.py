@@ -80,9 +80,10 @@ class dataFrame:
             # hist1 /= (hist1.sum())
             # hist2 /= (hist2.sum())
 
-            x = np.sqrt(np.power(np.subtract(hist1, hist2), 2)) * 100
-
-            x[np.isnan(x)] = 0
+            x = np.abs(np.subtract(hist1, hist2)) * 100
+            # x = np.concatenate([hist1, hist2])
+            # x /= x.sum()
+            # x[np.isnan(x)] = 0
             if len(self.X) == 0:
                 self.X = pd.DataFrame(x).transpose()
             else:

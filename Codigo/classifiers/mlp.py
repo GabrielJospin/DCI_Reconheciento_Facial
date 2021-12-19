@@ -5,7 +5,13 @@ import scipy.ndimage
 import matplotlib.pyplot as plt
 import matplotlib.pyplot
 import datetime
+import numpy as np
 
+
+def normalize(X: np.array):
+    tam = len(X)
+    Y = (X - X.mean()) / X.std()
+    return 1/(1+np.exp(- Y))
 
 # neural network definition
 class mlp:
@@ -77,5 +83,5 @@ class mlp:
         # calculate signals emerging from hidden layer
         final_outputs = self.activation_function(final_inputs)
 
-        return final_outputs
+        return final_outputs.transpose()
 
