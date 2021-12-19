@@ -52,7 +52,7 @@ class svm:
             # print(result)
             out.append(int(result))
         # return out
-        return normalize(np.asarray(out)).transpose() + 0.5
+        return 1 - normalize(np.asarray(out)).transpose()
 
     def output(self, x):
         if self.use_linear_optim:

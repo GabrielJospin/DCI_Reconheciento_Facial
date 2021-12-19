@@ -124,4 +124,6 @@ for modelo in modelos:
 
         error = pd.DataFrame(Y.__sub__(newYt))
         error.to_csv(f'{con.EXECUCAO_PATH}/exit/{modelo}.{ope.__name__}.error.csv')
+
         print(np.power(error, 2).sum() / len(error))
+        print((1 - erro/len(newYt)) * 100)

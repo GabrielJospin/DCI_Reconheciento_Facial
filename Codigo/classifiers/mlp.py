@@ -81,7 +81,7 @@ class mlp:
         # calculate signals into final output layer
         final_inputs = numpy.dot(self.who, hidden_outputs)
         # calculate signals emerging from hidden layer
-        final_outputs = self.activation_function(final_inputs) +0.5
+        final_outputs = self.activation_function(final_inputs)
 
         return final_outputs.transpose()
 
