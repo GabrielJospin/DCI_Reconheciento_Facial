@@ -65,16 +65,16 @@ if __name__ == '__main__':
 # preProcessHog()
 # preProcessLbp()
 
-df = clf.dataFrame(constants.file_path[0], True, 'hog')
-df2 = clf.dataFrame(constants.file_path[1], False, 'hog')
+df = clf.dataFrame(constants.file_path[0], True, 'lbp')
+df2 = clf.dataFrame(constants.file_path[1], False, 'lbp')
 
-dfTest = clf.dataFrame(constants.file_path[2], True, 'hog', test=True)
-df2Test = clf.dataFrame(constants.file_path[3], False, 'hog', test=True)
+dfTest = clf.dataFrame(constants.file_path[2], True, 'lbp', test=True)
+df2Test = clf.dataFrame(constants.file_path[3], False, 'lbp', test=True)
 
-# gerateDF(df)
-# gerateDF(df2)
-# gerateDF(dfTest)
-# gerateDF(df2Test)
+gerateDF(df)
+gerateDF(df2)
+gerateDF(dfTest)
+gerateDF(df2Test)
 
 (X1, Y1) = df.getDB()
 (X2, Y2) = df2.getDB()
@@ -98,7 +98,7 @@ newXt = pd.DataFrame(Xt)
 newY = pd.DataFrame(Y)
 newYt = np.asarray(Yt)
 
-classificadores = [clf.mlp, clf.svm, clf.RegLog]
+classificadores = [clf.mlp, clf.svm]
 
 for ope in classificadores:
 

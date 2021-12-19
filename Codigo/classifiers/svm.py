@@ -23,6 +23,7 @@ class svm:
     def __init__(self, X, Y, C=10, tol=0.001, kernel=linear_kernel, use_linear_optim=True) -> None:
         super().__init__()
         self.X = np.matrix(normalize(X))
+        self.X[np.isnan(self.X)] = 0
         self.y = np.matrix(Y)
         self.m, self.n = np.shape(self.X)
         self.alphas = np.zeros(self.m)

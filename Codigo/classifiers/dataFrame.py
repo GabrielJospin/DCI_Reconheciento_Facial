@@ -30,7 +30,6 @@ class dataFrame:
         self.Y = pd.DataFrame(columns=['pair'])
         self.db = pd.DataFrame()
 
-
     def generateFiles(self):
         if self.pairs:
             with open(self.path, "rb") as infile:
@@ -72,13 +71,18 @@ class dataFrame:
             img2 = row['img2']
             y = int(row['pair'])
             image1 = cv2.cvtColor(cv2.imread(img1), cv2.COLOR_BGR2GRAY)
-            max_bins = int(image1.max() + 1)
+            max_bins = int(image1.max() / 20 + 1)
             (hist1, _) = np.histogram(image1.ravel(), normed=True, bins=max_bins, range=(0, max_bins))
 
             image2 = cv2.cvtColor(cv2.imread(img2), cv2.COLOR_BGR2GRAY)
             (hist2, _) = np.histogram(image2.ravel(), normed=True, bins=max_bins, range=(0, max_bins))
 
-            x = np.concatenate([hist1, hist2])
+            # hist1 /= (hist1.sum())
+            # hist2 /= (hist2.sum())
+
+            x = np.sqrt(np.power(np.subtract(hist1, hist2), 2)) * 100
+
+            x[np.isnan(x)] = 0
             if len(self.X) == 0:
                 self.X = pd.DataFrame(x).transpose()
             else:
@@ -88,11 +92,12 @@ class dataFrame:
             self.Y = self.Y.append({'pair': y}, ignore_index=True)
 
         self.db = self.X
+        self.db[np.isnan(self.db)] = 0
         self.db['pair'] = self.Y['pair']
         self.db.to_csv(f'{self.pathDic}{self.model}.{self.type}.csv')
 
     def getDB(self):
         df = pd.read_csv(f'{self.pathDic}{self.model}.{self.type}.csv', index_col=0)
         X = df.iloc[:, 0:(len(df.columns) - 1)]
-        Y = df.iloc[:,(len(df.columns) - 1):(len(df.columns))]
+        Y = df.iloc[:, (len(df.columns) - 1):(len(df.columns))]
         return (X, Y)

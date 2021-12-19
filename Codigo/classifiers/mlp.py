@@ -1,99 +1,81 @@
+import numpy
+import scipy.special
+import scipy.misc
+import scipy.ndimage
+import matplotlib.pyplot as plt
+import matplotlib.pyplot
+import datetime
 
-import numpy as np
 
+# neural network definition
+class mlp:
 
-class mlp():
-
-    @staticmethod
-    def normalize(X: np.array):
-        tam = len(X)
-        Y = (X - X.mean()) / X.std()
-        return Y
-
-    def __init__(self, X, Y, h=1):
-        super(mlp, self).__init__()
-        self.X = self.normalize(X).replace(np.nan, 0)
-        # print(f'after Normalize')
-        # print(self.X)
+    # init neural network
+    def __init__(self, X, Y, hidden=1, alpha=0.1):
+        self.X = X
         self.Y = Y
-        self.h = h
-        N, ne = X.shape
-        ns = Y.shape[1]
-        self.A = np.ones((self.h, ne))
-        self.A = 2 * self.A - 1
-        self.B = np.ones((ns, self.h))
-        self.B = 2 * self.B - 1
+        # set number of nodes in each input, hidden and output layer
+        self.inodes = X.shape[1]
+        self.onodes = Y.shape[1]
+        self.hnodes = hidden
 
+        # learning rate
+        self.lr = alpha
+
+        # linkweight matrices, wih and who
+        self.wih = numpy.random.normal(0.0, pow(self.hnodes, -0.5), (self.hnodes, self.inodes))
+        self.who = numpy.random.normal(0.0, pow(self.onodes, -0.5), (self.onodes, self.hnodes))
+
+        # activation function (sigmoid function expit)
+        self.activation_function = lambda x: scipy.special.expit(x)
+        self.inverse_activation_function = lambda x: scipy.special.logit(x)
+
+    # train the neural network
     def train(self):
-        h = self.h
-        X = self.X
-        Y = self.Y
-        N, ne = X.shape
-        ns = Y.shape[2 - 1]
-        # Inicializei a matriz de pesos
-        A = self.A
-        B = self.B
-        # Calcula do erro
-        Yr = self.calc_saida(X)
-        # print(Y)
-        # print(Yr)
-        erro = np.matrix(np.subtract(Y, Yr))
-        # print(erro)
-        E = sum(sum(np.multiply(erro, erro)))
-        # Definir numero de epocas
-        nepmax = 200
-        nep = 0
-        alfa = 0.01
-        # Calculo do gradiente
-        self.calc_grad()
-        g = np.concatenate([self.dEdA.transpose(), self.dEdB])
-        # print(np.linalg.norm(g))
-        # print(E)
-        # print('--------------------------------------------')
-        while np.linalg.norm(g) > 0.001 and (nep < nepmax and E > 0.0001):
-            # print(f'iteration {nep}')
-            # Incrementar o numero de epocas
-            nep = nep + 1
-            # Atualiza os pesos
-            A = A - alfa * self.dEdA
-            B = B - alfa * self.dEdB
-            # Calculo o gradiente
-            self.calc_grad()
-            g = np.concatenate([self.dEdA.transpose(), self.dEdB])
-            # Calculo o erro
-            Yr = self.calc_saida(X)
-            erro = np.matrix(np.subtract(Y, Yr))
-            E = sum(sum(np.multiply(erro, erro)))
-            self.A = A
-            self.B = B
-            # print(np.linalg.norm(g))
-            # print(E)
-            # print('--------------------------------------------')
+        inputs_list = self.X
+        targets_list = self.Y
+        inputs = numpy.array(inputs_list, ndmin=2).T
+        targets = numpy.array(targets_list, ndmin=2).T
 
-    def calc_saida(self, X):
-        X = self.normalize(X).replace(np.nan, 0)
-        A = self.A
-        B = self.B
-        N, ne = X.shape
-        Zin = np.matmul(X, np.transpose(A))
-        Z = 1.0 / (1 + np.exp(Zin))
-        Yin = np.matmul(Z, np.transpose(B))
-        Yr = 1.0 / (1 + np.exp(Yin))
-        return Yr * 2
+        # calculate signals into hidden layer
+        hidden_inputs = numpy.dot(self.wih, inputs)
+        # calculate signals emerging from hidden layer
+        hidden_outputs = self.activation_function(hidden_inputs)
 
-    def calc_grad(self):
-        A = self.A
-        B = self.B
-        X = self.X
-        Y = self.Y
+        # calculate signals into final output layer
+        final_inputs = numpy.dot(self.who, hidden_outputs)
+        # calculate signals emerging from hidden layer
+        final_outputs = self.activation_function(final_inputs)
 
-        Zin = np.matmul(X, np.transpose(A))
-        Z = 1.0 / (1 + np.exp(Zin))
-        Yin = np.matmul(Z, np.transpose(B))
-        Yr = 1.0 / (1 + np.exp(Yin))
-        erro = np.subtract(Yr, Y)
-        gl = np.multiply((1 - Yr), Yr)
-        fl = np.multiply((1 - Z), Z)
-        self.dEdB = np.matmul(np.multiply(erro, gl).transpose(), Z)
-        self.dEdZ = np.matmul(np.multiply(erro, gl), B)
-        self.dEdA = np.matmul(np.transpose((np.multiply(self.dEdZ, fl))), X)
+        # output layer error is target - actual
+        output_errors = targets - final_outputs
+        # hidden layer error is the outputs error
+        hidden_errors = numpy.dot(self.who.T, output_errors)
+
+        # update the weights for the links between the hidden and output layers
+        self.who += self.lr * numpy.dot(output_errors * final_outputs * (1.0 - final_outputs),
+                                        numpy.transpose(hidden_outputs))
+
+        # update the weights for the links between the input and hidden layers
+        self.wih += self.lr * numpy.dot(hidden_errors * hidden_outputs * (1.0 - hidden_outputs),
+                                        numpy.transpose(inputs))
+
+        pass
+
+    # query the neural network
+    def calc_saida(self, inputs_list):
+        # convert inputs_list to 2d array
+        inputs = numpy.array(inputs_list, ndmin=2).T
+
+        # calculate signals into hidden layer
+        hidden_inputs = numpy.dot(self.wih, inputs)
+        # calculate signals emerging from hidden layer
+        hidden_outputs = self.activation_function(hidden_inputs)
+
+        # calculate signals into final output layer
+        final_inputs = numpy.dot(self.who, hidden_outputs)
+        # calculate signals emerging from hidden layer
+        final_outputs = self.activation_function(final_inputs)
+
+        return final_outputs
+
