@@ -1,0 +1,8 @@
+Execucao em 19/12/2021
+
+MLP_SPECIFICATION: ('layer 0', 12, 'sigmoid', 'mse')
+MLP_SPECIFICATION: ('layer 1', 1, 'sigmoid', 'mse')
+
+MLP_OPERATION_ETA_METHOD: FIX
+MLP_OPERATION_ETA_PARAMS: 0.1
+MLP_OPERATON_MAX_EPOCHS: 220
