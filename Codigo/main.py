@@ -4,9 +4,9 @@ import pandas as pd
 import imagePreProcessing as ipp
 import classifiers as clf
 from classifiers import constants
+import constants as con
 
 import readFile
-
 
 def print_hi(name):
     print(f'Hello there \nGeneral {name}!!')
@@ -51,10 +51,11 @@ def gerateDF(data):
     data.generateDB()
 
 
-def oper(ValuesIn, ValuesOut, test, ope):
+def oper(ValuesIn, ValuesOut, test, ope, modelo):
     classif = ope(ValuesIn, ValuesOut)
     classif.train()
-    print(test)
+    w = pd.DataFrame(classif.wih)
+    w.to_csv(f'{con.EXECUCAO_PATH}/exit/{modelo}.{ope.__name__}.data.csv')
     outY = pd.DataFrame(classif.calc_saida(test))
     return outY
 
@@ -64,60 +65,63 @@ if __name__ == '__main__':
 
 # preProcessHog()
 # preProcessLbp()
+modelos = ['lbp', 'hog']
+for modelo in modelos:
 
-df = clf.dataFrame(constants.file_path[0], True, 'hog')
-df2 = clf.dataFrame(constants.file_path[1], False, 'hog')
+    print(f"---------------- modelo:{modelo} --------------------------- ")
 
-dfTest = clf.dataFrame(constants.file_path[2], True, 'hog', test=True)
-df2Test = clf.dataFrame(constants.file_path[3], False, 'hog', test=True)
+    df = clf.dataFrame(constants.file_path[0], True, modelo)
+    df2 = clf.dataFrame(constants.file_path[1], False, modelo)
 
-gerateDF(df)
-gerateDF(df2)
-gerateDF(dfTest)
-gerateDF(df2Test)
+    dfTest = clf.dataFrame(constants.file_path[2], True, modelo, test=True)
+    df2Test = clf.dataFrame(constants.file_path[3], False, modelo, test=True)
 
-(X1, Y1) = df.getDB()
-(X2, Y2) = df2.getDB()
-(Xt1, Yt1) = dfTest.getDB()
-(Xt2, Yt2) = df2Test.getDB()
+    # gerateDF(df)
+    # gerateDF(df2)
+    # gerateDF(dfTest)
+    # gerateDF(df2Test)
 
-X = X1.append(X2, ignore_index=True)
-Y = Y1.append(Y2, ignore_index=True)
+    (X1, Y1) = df.getDB()
+    (X2, Y2) = df2.getDB()
+    (Xt1, Yt1) = dfTest.getDB()
+    (Xt2, Yt2) = df2Test.getDB()
 
-Xt = Xt1.append(Xt2, ignore_index=True)
-Yt = Yt1.append(Yt2, ignore_index=True)
-Yt = np.asarray(Yt)
+    X = X1.append(X2, ignore_index=True)
+    Y = Y1.append(Y2, ignore_index=True)
 
-print(X)
-print(Y)
-print(Xt)
-print(Yt)
+    Xt = Xt1.append(Xt2, ignore_index=True)
+    Yt = Yt1.append(Yt2, ignore_index=True)
+    Yt = np.asarray(Yt)
 
-newX = pd.DataFrame(X)
-newXt = pd.DataFrame(Xt)
-newY = pd.DataFrame(Y)
-newYt = np.asarray(Yt)
+    # print(X)
+    # print(Y)
+    # print(Xt)
+    # print(Yt)
 
-classificadores = [clf.mlp, clf.svm]
+    newX = pd.DataFrame(X)
+    newXt = pd.DataFrame(Xt)
+    newY = pd.DataFrame(Y)
+    newYt = np.asarray(Yt)
 
-for ope in classificadores:
+    classificadores = [clf.mlp, clf.svm]
 
-    erro = 0
-    outs = []
-    Y = pd.DataFrame(oper(newX, newY, newXt, ope))
+    for ope in classificadores:
 
-    for index, x in Y.iterrows():
-        if x[0] > 0.5:
-            out = 1
-        else:
-            out = 0
+        print(f"---------------- class:{ope.__name__} --------------------------- ")
+        erro = 0
+        outs = []
+        Y = pd.DataFrame(oper(newX, newY, newXt, ope, modelo))
 
-        outs.append(out)
-        if newYt[index] != out:
-            erro += 1
+        for index, x in Y.iterrows():
+            if x[0] > 0.5:
+                out = 1
+            else:
+                out = 0
 
-    print(outs)
-    print(newYt)
-    print(Y.transpose())
-    print(erro)
-    print((1 - erro / len(newYt)) * 100)
+            outs.append(out)
+            if newYt[index] != out:
+                erro += 1
+
+        error = pd.DataFrame(Y.__sub__(newYt))
+        error.to_csv(f'{con.EXECUCAO_PATH}/exit/{modelo}.{ope.__name__}.error.csv')
+        print(np.power(error, 2).sum() / len(error))

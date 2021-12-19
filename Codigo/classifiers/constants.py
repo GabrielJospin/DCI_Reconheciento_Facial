@@ -5,7 +5,7 @@ FORMAT = ".jpg"
 # Path para o banco de dados
 DATABASE_PATH = "../DataBase"
 
-# Path de teste
+# Path de exit
 TEST_PATH = DATABASE_PATH + "/test"
 ORIGINAL_TEST_PATH = TEST_PATH + "/original/"
 HOG_TEST_PATH = TEST_PATH + "/HOG/"

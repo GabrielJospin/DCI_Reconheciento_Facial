@@ -37,12 +37,12 @@ class svm:
 
         self.b = 0
 
-        self.w = np.zeros(self.n)
+        self.wih = np.zeros(self.n)
         self.use_linear_optim = use_linear_optim
 
         # Compute the SVM output for example i
-        # Note that Platt uses the convention w.x-b=0
-        # while we have been using w.x+b in the book.
+        # Note that Platt uses the convention wih.x-b=0
+        # while we have been using wih.x+b in the book.
 
     def calc_saida(self, Xt):
         out = []
@@ -52,12 +52,12 @@ class svm:
             # print(result)
             out.append(int(result))
         # return out
-        return normalize(np.asarray(out)).transpose()
+        return normalize(np.asarray(out)).transpose() + 0.5
 
     def output(self, x):
         if self.use_linear_optim:
             # Equation 1
-            return float(np.matmul(np.matrix(self.w), x.T)) - self.b
+            return float(np.matmul(np.matrix(self.wih), x.T)) - self.b
         else:
             # Equation 10
             return np.sum([self.alphas[j] * self.y[j]
@@ -146,8 +146,8 @@ class svm:
 
         # Equation 22
         if self.use_linear_optim:
-            self.w = self.w + y1 * (a1_new - a1) * X1 \
-                     + self.y2 * (a2_new - self.a2) * self.X2
+            self.wih = self.wih + y1 * (a1_new - a1) * X1 \
+                       + self.y2 * (a2_new - self.a2) * self.X2
 
         # Update the error cache using the new Lagrange multipliers.
         delta1 = y1 * (a1_new - a1)
