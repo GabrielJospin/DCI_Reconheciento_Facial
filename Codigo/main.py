@@ -63,6 +63,8 @@ def oper(ValuesIn, ValuesOut, test, ope, modelo):
     classif = ope(ValuesIn, ValuesOut)
     classif.train()
     w = pd.DataFrame(classif.wih)
+    print(ValuesIn)
+    print(test)
     w.to_csv(f'{con.EXECUCAO_PATH}/exit/{modelo}.{ope.__name__}.data.csv')
     outY = pd.DataFrame(classif.calc_saida(test))
     return outY
@@ -73,13 +75,13 @@ if __name__ == '__main__':
 
 
 print(f'---------------------------------CNN----------------------------------------')
-preProcessCNN()
+# preProcessCNN()
 print(f'----------------------------------HOG---------------------------------------')
-preProcessHog()
+# preProcessHog()
 print(f'------------------------------------LBP-------------------------------------')
-preProcessLbp()
+# preProcessLbp()
 print(f'-------------------------------------------------------------------------')
-modelos = ['lbp', 'hog']
+modelos = ['lbp', 'hog', 'cnn']
 for modelo in modelos:
 
     print(f"---------------- modelo:{modelo} --------------------------- ")
