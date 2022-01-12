@@ -3,3 +3,4 @@
 from .image import image
 from .hog import hog
 from .lbp import lbp
+from .CNNpp import CNNpp

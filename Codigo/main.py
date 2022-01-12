@@ -1,12 +1,11 @@
+import readFile
 import numpy as np
 import pandas as pd
-
-import imagePreProcessing as ipp
-import classifiers as clf
-from classifiers import constants
 import constants as con
+import classifiers as clf
+import imagePreProcessing as ipp
+from classifiers import constants
 
-import readFile
 
 def print_hi(name):
     print(f'Hello there \nGeneral {name}!!')
@@ -46,6 +45,15 @@ def preProcessLbp():
         hist = lbp.generate()
 
 
+def preProcessCNN():
+    image = imageArray()
+
+    for img in image:
+        imageF = ipp.image(img[0], test=(img[1] > 1))
+        cnn = ipp.CNNpp(imageF, test=(img[1] > 1))
+        hist = cnn.generate()
+
+
 def gerateDF(data):
     data.generateFiles()
     data.generateDB()
@@ -63,8 +71,14 @@ def oper(ValuesIn, ValuesOut, test, ope, modelo):
 if __name__ == '__main__':
     print_hi('Kenobi')
 
-# preProcessHog()
-# preProcessLbp()
+
+print(f'---------------------------------CNN----------------------------------------')
+preProcessCNN()
+print(f'----------------------------------HOG---------------------------------------')
+preProcessHog()
+print(f'------------------------------------LBP-------------------------------------')
+preProcessLbp()
+print(f'-------------------------------------------------------------------------')
 modelos = ['lbp', 'hog']
 for modelo in modelos:
 
@@ -76,10 +90,10 @@ for modelo in modelos:
     dfTest = clf.dataFrame(constants.file_path[2], True, modelo, test=True)
     df2Test = clf.dataFrame(constants.file_path[3], False, modelo, test=True)
 
-    # gerateDF(df)
-    # gerateDF(df2)
-    # gerateDF(dfTest)
-    # gerateDF(df2Test)
+    gerateDF(df)
+    gerateDF(df2)
+    gerateDF(dfTest)
+    gerateDF(df2Test)
 
     (X1, Y1) = df.getDB()
     (X2, Y2) = df2.getDB()
@@ -126,4 +140,6 @@ for modelo in modelos:
         error.to_csv(f'{con.EXECUCAO_PATH}/exit/{modelo}.{ope.__name__}.error.csv')
 
         print(np.power(error, 2).sum() / len(error))
-        print((1 - erro/len(newYt)) * 100)
+        print((1 - erro / len(newYt)) * 100)
+
+print(f'Hasta La Vista, baby')
