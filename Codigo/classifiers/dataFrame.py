@@ -74,7 +74,8 @@ class dataFrame:
             img1 = row['img1']
             img2 = row['img2']
             y = int(row['pair'])
-            image1 = cv2.cvtColor(cv2.imread(img1), cv2.COLOR_BGR2GRAY)
+            # image1 = cv2.cvtColor(cv2.imread(img1), cv2.COLOR_BGR2GRAY)
+            image1 = cv2.imread(img1)
             max_bins = int(image1.max() / 20 )
             (hist1, _) = np.histogram(image1.ravel(), normed=True, bins=13, range=(0, max_bins))
 
@@ -86,7 +87,7 @@ class dataFrame:
 
             x = np.abs(np.subtract(hist1, hist2)) * 100
             # x = np.concatenate([hist1, hist2])
-            x /= x.sum()
+            # x /= x.sum()
             x[np.isnan(x)] = 0
             if len(self.X) == 0:
                 self.X = pd.DataFrame(x).transpose()
@@ -103,7 +104,6 @@ class dataFrame:
 
     def getDB(self):
         df = pd.read_csv(f'{self.pathDic}{self.model}.{self.type}.csv', index_col=0)
-        print(f'IDK WATH FUCK IS RUNNING: {len(df.columns)}')
         X = df.iloc[:, 0:(len(df.columns) - 1)]
         Y = df.iloc[:, (len(df.columns) - 1):(len(df.columns))]
         return (X, Y)
